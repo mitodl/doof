@@ -1,0 +1,11 @@
+language: python
+python:
+- '2.7'
+install:
+- pip install -r requirements.txt --use-mirrors
+script: bash scripts/integration_test
+deploy:
+  provider: heroku
+  api_key:
+    secure: TjyGL0+Dbogf4LnIMNNxLB/jnAo8uhQ7jxne8sDkNvVol7Qmj91OoGemj35oynH0jsvqeKK8yoHA9uh3J5qBs4NoNQIOea34lv4BxmujmfO7pI6ZyqHy7ZPVSRU1SUo4qExcHF+AYE8pxFNpEqISEQn9N6MTQYWYGrJOwqA26ik=
+  app: doof

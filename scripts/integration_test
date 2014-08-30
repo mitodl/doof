@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Simple "integration" test to see if the bot runs
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+cd ..
+./doof.py &
+PID=$!
+sleep 10
+RUNNING=$(ps a | grep doof | grep -v grep | wc -l)
+if [ ${RUNNING} -gt 0 ]; then
+    kill $PID
+    ps a | grep doof | grep -v grep | awk '{print $1}' | xargs kill -9
+    exit 0;
+else
+    exit 1;
+fi
