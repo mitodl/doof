@@ -45,13 +45,26 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         if not repos:
             return None
 
-        repos_dict['private'] = [x['name']
-                                 for x in repos
-                                 if x['private']]
-        repos_dict['public'] = [x['name']
-                                for x in repos
-                                if not x['private']]
+        repos_dict['private'] = sorted(
+            [x for x in repos if x['private']]
+        )
+        repos_dict['public'] = sorted(
+            [x for x in repos if not x['private']]
+        )
         return repos_dict
+
+    def format_repo_list(self, repos):
+        """
+        Returns a HTML unordered list of repos with links
+        to the repo page
+        """
+        html_repo_list = ['<ul>', ]
+        for repo in repos:
+            html_repo_list.append(
+                '<li><a href="{html_url}">{name}</a></li>'.format(**repo)
+            )
+        html_repo_list.append('</ul>')
+        return html_repo_list
 
     @respond_to('github repos for (?P<user>[\w\-_]+)')
     def list_user_repos(self, message, user):
@@ -79,12 +92,14 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
             else:
                 user_type = 'Org'
             ghe_message = (
-                '{0} was a {1}\nPrivate Repos:\n{2}\n\n'
-                'Public Repos:\n{3}'.format(
+                '{0} was a {1}\n<br />Private Repos:\n<br />{2}'
+                '<br /><br />\n\nPublic Repos:<br />\n{3}'.format(
                     user,
                     user_type,
-                    '\n'.join(ghe_repos_dict['private']),
-                    '\n'.join(ghe_repos_dict['public'])
+                    '\n'.join(
+                        self.format_repo_list(ghe_repos_dict['private'])
+                    ),
+                    '\n'.join(self.format_repo_list(ghe_repos_dict['public']))
                 )
             )
 
@@ -115,15 +130,82 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
                 'Public Repos:\n{3}'.format(
                     user,
                     user_type,
-                    '\n'.join(ghc_repos_dict['private']),
-                    '\n'.join(ghc_repos_dict['public'])
+                    '\n'.join(
+                        self.format_repo_list(ghc_repos_dict['private'])
+                    ),
+                    '\n'.join(self.format_repo_list(ghc_repos_dict['public']))
                 )
             )
 
         self.reply(
             message,
-            ("Here are the amazing results of my github-inator:\n"
-             "Github Enterprise:\n{0}\nGithub.com:\n{1}").format(
+            ("Here are the amazing results of my github-inator:<br />\n"
+             "<b>Github Enterprise:</b><br />\n{0}\n<br />"
+             "<b>Github.com:</b><br />\n{1}").format(
                 ghe_message, ghc_message
+            ),
+            html=True
+        )
+
+    @respond_to("^find repos for course (?P<course_name>[\d\.\w]+).+")
+    def find_repos_for_course(self, message, course_name):
+        """github: find repos for course ___"""
+
+        # First massage string into repo format
+        course_name = course_name.replace('.', '')
+        if course_name[-1].lower() in ['x', 'r']:
+            course_name = course_name[:-1]
+        course_name = 'content-mit-{}'.format(course_name)
+
+        # Search GHE and the GHC
+        url = '{}search/repositories?q={}'.format(
+            self.GHE_API_URL, course_name
+        )
+        try:
+            ghe_results = self.get_all(True, url)
+        except RequestException:
+            ghe_message = self.DOOF_REQ_EXCEPT
+
+        url = '{}search/repositories?q={}'.format(
+            self.GHC_API_URL, course_name
+        )
+        try:
+            ghc_results = self.get_all(False, url)
+        except RequestException:
+            ghc_message = self.DOOF_REQ_EXCEPT
+
+        num_repos = 0
+        if len(ghe_results.get('items', 0)) > 0:
+            num_repos += len(ghe_results['items'])
+            html_repo_list = self.format_repo_list(ghe_results['items'])
+            ghe_message = (
+                'Found {0} repos at  for course on GHE:\n<br />{1}'.format(
+                    len(ghe_results['items']), '\n'.join(html_repo_list)
+                )
             )
+        if len(ghc_results.get('items', 0)) > 0:
+            num_repos += len(ghc_results['items'])
+            html_repo_list = self.format_repo_list(ghc_results['items'])
+            ghc_message = (
+                'Found {0} repos at  for course on GHC:\n<br />{1}'.format(
+                    len(ghc_results['items']), '\n'.join(html_repo_list)
+                )
+            )
+        scare_message = ''
+        notify = False
+        color = 'green'
+        if num_repos > 2:
+            scare_message = (
+                '<b>Seriously!? Why so many repos for one '
+                'course?! Sounds like you need my '
+                'repo-delete-inator</b><br />'
+            )
+            color = 'red'
+            notify = True
+        self.reply(
+            message,
+            '{0}{1}{2}'.format(scare_message, ghe_message, ghc_message),
+            html=True,
+            notify=notify,
+            color=color
         )
