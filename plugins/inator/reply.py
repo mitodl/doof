@@ -1,10 +1,8 @@
-import logging
 import requests
 from requests.exceptions import RequestException
+
 from will.plugin import WillPlugin
 from will.decorators import respond_to
-
-log = logging.getLogger('doof')
 
 
 class RepliesPlugin(WillPlugin):
