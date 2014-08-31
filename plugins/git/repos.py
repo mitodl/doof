@@ -56,7 +56,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
     @respond_to('github repos for (?P<user>[\w\-_]+)')
     def list_user_repos(self, message, user):
         """
-        github: list repos for user or org
+        github: github repos for ___.
         """
         ghe_message = ''
         ghe_repos_dict = {}

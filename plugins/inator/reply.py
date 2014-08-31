@@ -9,7 +9,7 @@ class RepliesPlugin(WillPlugin):
 
     @respond_to("^any new schemes\?")
     def schemeinator(self, message):
-        """scheme: insights into what doof is working on"""
+        """scheme: any new schemes?"""
         try:
             req = requests.get("http://randomword.setgetgo.com/get.php")
             word = req.text.replace('\n', '').replace('\r', '')
