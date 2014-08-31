@@ -16,11 +16,6 @@ log = logging.getLogger('doof')
 
 class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
 
-    DOOF_REQ_EXCEPT = ("Well, that didn't work. And now we "
-                       "have a two-ton ball of tin foil "
-                       "going at 200 miles a hour heading "
-                       "directly at us!")
-
     def get_repos_by_user(self, use_ghe, user):
         """
         Returns a dictionary of private and public repos
@@ -105,7 +100,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
 
         ghc_message = ''
         ghc_repos_dict = {}
-        if not self.ghe_session:
+        if not self.ghc_session:
             ghc_message = ("You forget to give me the Github.com Key. "
                            "I trusted you and you just cast me aside like "
                            "a... like... like an old newspaper. He didn't "
@@ -126,8 +121,8 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
             else:
                 user_type = 'Org'
             ghc_message = (
-                '{0} was a {1}\nPrivate Repos:\n{2}\n\n'
-                'Public Repos:\n{3}'.format(
+                '{0} was a {1}\n<br />Private Repos:\n<br />{2}'
+                '<br /><br />\n\nPublic Repos:<br />\n{3}'.format(
                     user,
                     user_type,
                     '\n'.join(
@@ -151,12 +146,18 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
     def find_repos_for_course(self, message, course_name):
         """github: find repos for course ___"""
 
+        ghe_message = None
+        ghc_message = None
+
         # First massage string into repo format
         course_name = course_name.replace('.', '')
         if course_name[-1].lower() in ['x', 'r']:
             course_name = course_name[:-1]
         course_name = 'content-mit-{}'.format(course_name)
 
+        if not self.ghe_session:
+            ghe_message = ('You forget to give me the Github Enterprise Key. '
+                           "Now THAT'S what I call getting the boot!")
         # Search GHE and the GHC
         url = '{}search/repositories?q={}'.format(
             self.GHE_API_URL, course_name
@@ -166,6 +167,12 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         except RequestException:
             ghe_message = self.DOOF_REQ_EXCEPT
 
+        if not self.ghc_session:
+            ghc_message = ("You forget to give me the Github.com Key. "
+                           "I trusted you and you just cast me aside like "
+                           "a... like... like an old newspaper. He didn't "
+                           "even wrap fish in me. Now THAT'S what I call "
+                           "getting the boot!")
         url = '{}search/repositories?q={}'.format(
             self.GHC_API_URL, course_name
         )

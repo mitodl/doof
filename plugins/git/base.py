@@ -17,6 +17,11 @@ class GithubBaseMixIn(object):
     GHE_API_KEY = os.environ.get('GHE_API_KEY', None)
     GHC_API_KEY = os.environ.get('GHC_API_KEY', None)
 
+    DOOF_REQ_EXCEPT = ("Well, that didn't work. And now we "
+                       "have a two-ton ball of tin foil "
+                       "going at 200 miles a hour heading "
+                       "directly at us!")
+
     @property
     def ghe_session(self):
         """
