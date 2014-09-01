@@ -98,7 +98,6 @@ class GithubBaseMixIn(object):
                 while response.links.get('next', False):
                     response = session.get(response.links['next']['url'])
                     results += response.json()
-            return results
         except RequestException:
             return (None, self.DOOF_REQ_EXCEPT)
 
@@ -108,4 +107,4 @@ class GithubBaseMixIn(object):
                 'No results on {}. How completely unexpected. '
                 'And by unexpected, I mean COMPLETELY EXPECTED!'
                 ).format(site_name)
-        return (results, error_message)
+        return results, error_message

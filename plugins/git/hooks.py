@@ -1,8 +1,6 @@
 """
 Commands for github hooks.
 """
-
-from requests.exceptions import RequestException
 from urlparse import urlparse
 
 from will.plugin import WillPlugin
