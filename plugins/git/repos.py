@@ -4,7 +4,6 @@ finding a repo, or other nonsense against the repo API.
 """
 
 import logging
-from requests.exceptions import RequestException
 
 from will.plugin import WillPlugin
 from will.decorators import respond_to
@@ -23,22 +22,19 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         """
         repos = None
         repos_dict = {}
-        if use_ghe:
-            url = self.GHE_API_URL
-        else:
-            url = self.GHC_API_URL
 
         # Try org repos first, then users
-        repos = self.get_all(use_ghe, '{}orgs/{}/repos'.format(url, user))
+        repos, err = self.get_all(use_ghe, 'orgs/{}/repos'.format(user))
+
         if repos:
             repos_dict['is_user'] = False
         else:
-            repos = self.get_all(use_ghe, '{}users/{}/repos'.format(url, user))
+            repos, err = self.get_all(use_ghe, 'users/{}/repos'.format(user))
             if repos:
                 repos_dict['is_user'] = True
 
         if not repos:
-            return None
+            return None, err
 
         repos_dict['private'] = sorted(
             [x for x in repos if x['private']]
@@ -46,7 +42,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         repos_dict['public'] = sorted(
             [x for x in repos if not x['private']]
         )
-        return repos_dict
+        return repos_dict, err
 
     def format_repo_list(self, repos):
         """
@@ -66,69 +62,46 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         """
         github: github repos for ___.
         """
-        ghe_message = ''
-        ghe_repos_dict = {}
+        ghe_repos_dict, err = self.get_repos_by_user(True, user)
 
-        if not self.ghe_session:
-            ghe_message = ('You forget to give me the Github Enterprise Key. '
-                           "Now THAT'S what I call getting the boot!")
-        try:
-            ghe_repos_dict = self.get_repos_by_user(True, user)
-        except RequestException:
-            ghe_message = self.DOOF_REQ_EXCEPT
-
-        if not ghe_repos_dict:
-            ghe_message = ("There are no GHE repos for that thing you "
-                           "entered. I know what you're thinking, but "
-                           "this is neither ironic nor funny.")
+        if not ghe_repos_dict and err:
+            ghe_message = err
         else:
             if ghe_repos_dict['is_user']:
                 user_type = 'User'
             else:
                 user_type = 'Org'
             ghe_message = (
-                '{0} was a {1}\n<br />Private Repos:\n<br />{2}'
-                '<br /><br />\n\nPublic Repos:<br />\n{3}'.format(
+                '{0} was a {1}<br />Private Repos:<br />{2}'
+                '<br /><br />Public Repos:<br />{3}'.format(
                     user,
                     user_type,
-                    '\n'.join(
+                    ''.join(
                         self.format_repo_list(ghe_repos_dict['private'])
                     ),
-                    '\n'.join(self.format_repo_list(ghe_repos_dict['public']))
+                    ''.join(self.format_repo_list(ghe_repos_dict['public']))
                 )
             )
 
         ghc_message = ''
-        ghc_repos_dict = {}
-        if not self.ghc_session:
-            ghc_message = ("You forget to give me the Github.com Key. "
-                           "I trusted you and you just cast me aside like "
-                           "a... like... like an old newspaper. He didn't "
-                           "even wrap fish in me. Now THAT'S what I call "
-                           "getting the boot!")
-        try:
-            ghc_repos_dict = self.get_repos_by_user(False, user)
-        except RequestException:
-            ghc_message = self.DOOF_REQ_EXCEPT
+        ghc_repos_dict, err = self.get_repos_by_user(False, user)
 
-        if not ghc_repos_dict:
-            ghc_message = ("There are no github.com repos for that thing you "
-                           "entered. I could keep looking, but I doubt it "
-                           "will help.")
+        if not ghc_repos_dict and err:
+            ghc_message = err
         else:
             if ghc_repos_dict['is_user']:
                 user_type = 'User'
             else:
                 user_type = 'Org'
             ghc_message = (
-                '{0} was a {1}\n<br />Private Repos:\n<br />{2}'
-                '<br /><br />\n\nPublic Repos:<br />\n{3}'.format(
+                '{0} was a {1}<br />Private Repos:<br />{2}'
+                '<br /><br />Public Repos:<br />{3}'.format(
                     user,
                     user_type,
-                    '\n'.join(
+                    ''.join(
                         self.format_repo_list(ghc_repos_dict['private'])
                     ),
-                    '\n'.join(self.format_repo_list(ghc_repos_dict['public']))
+                    ''.join(self.format_repo_list(ghc_repos_dict['public']))
                 )
             )
 
@@ -155,31 +128,15 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
             course_name = course_name[:-1]
         course_name = 'content-mit-{}'.format(course_name)
 
-        if not self.ghe_session:
-            ghe_message = ('You forget to give me the Github Enterprise Key. '
-                           "Now THAT'S what I call getting the boot!")
         # Search GHE and the GHC
-        url = '{}search/repositories?q={}'.format(
-            self.GHE_API_URL, course_name
-        )
-        try:
-            ghe_results = self.get_all(True, url)
-        except RequestException:
-            ghe_message = self.DOOF_REQ_EXCEPT
+        url = 'search/repositories?q={}'.format(course_name)
+        ghe_results, err = self.get_all(True, url)
+        if err:
+            ghe_message = err
 
-        if not self.ghc_session:
-            ghc_message = ("You forget to give me the Github.com Key. "
-                           "I trusted you and you just cast me aside like "
-                           "a... like... like an old newspaper. He didn't "
-                           "even wrap fish in me. Now THAT'S what I call "
-                           "getting the boot!")
-        url = '{}search/repositories?q={}'.format(
-            self.GHC_API_URL, course_name
-        )
-        try:
-            ghc_results = self.get_all(False, url)
-        except RequestException:
-            ghc_message = self.DOOF_REQ_EXCEPT
+        ghc_results, err = self.get_all(False, url)
+        if err:
+            ghc_message = err
 
         num_repos = 0
         if len(ghe_results.get('items', 0)) > 0:

@@ -2,7 +2,9 @@
 Base class for handling github type book keeping
 """
 import os
+
 import requests
+from requests.exceptions import RequestException
 
 
 class GithubBaseMixIn(object):
@@ -60,16 +62,50 @@ class GithubBaseMixIn(object):
         """
         Iterate through all results returned by github since it
         maxes requests at 30 and return the entire list.
+
+        Args:
+            use_ghe (bool): Use Enterprise or .com
+            url (string): URL of API call without host
+
+        Returns:
+            tuple of Results of API call appended with all pages if it exceeds
+            the total count and any error message that may have occurred
         """
         if use_ghe:
             session = self.ghe_session
+            api_url = self.GHE_API_URL
+            site_name = "Github Enterprise"
         else:
             session = self.ghc_session
+            api_url = self.GHC_API_URL
+            site_name = "Github.com"
+
+        if not session:
+            return(
+                None,
+                "You forgot to give me the {} API key. I trusted "
+                "you and you just cast me aside like "
+                "a... like... like an old newspaper. He didn't "
+                "even wrap fish in me. Now THAT'S what I call "
+                "getting the boot!".format(site_name)
+            )
+
         results = None
-        response = session.get(url)
-        if response.status_code == 200:
-            results = response.json()
-            while response.links.get('next', False):
-                response = session.get(response.links['next']['url'])
-                results += response.json()
-        return results
+        try:
+            response = session.get('{0}{1}'.format(api_url, url))
+            if response.status_code == 200:
+                results = response.json()
+                while response.links.get('next', False):
+                    response = session.get(response.links['next']['url'])
+                    results += response.json()
+            return results
+        except RequestException:
+            return (None, self.DOOF_REQ_EXCEPT)
+
+        error_message = None
+        if not results:
+            error_message = (
+                'No results on {}. How completely unexpected. '
+                'And by unexpected, I mean COMPLETELY EXPECTED!'
+                ).format(site_name)
+        return (results, error_message)

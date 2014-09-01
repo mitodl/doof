@@ -31,10 +31,10 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                 hook['config']['url'] = ('{0.scheme}://{0.hostname}{0.path}'
                                          '?{0.query}'.format(hook_url))
             else:
-                hook['config']['url'] = "Not Web hook"
+                hook['config']['url'] = "n/a"
 
             if not hook['config'].get('content_type'):
-                hook['config']['content_type'] = 'no type'
+                hook['config']['content_type'] = 'n/a'
 
             hook['events'] = ' '.join(hook['events'])
             hook_table.append('<tr>'
@@ -55,32 +55,17 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
         ghe_message = None
         ghc_message = None
 
-        if not self.ghe_session:
-            ghe_message = ('You forget to give me the Github Enterprise Key. '
-                           "Now THAT'S what I call getting the boot!")
-        url = '{}repos/{}/{}/hooks'.format(self.GHE_API_URL, owner, repo)
-        try:
-            ghe_results = self.get_all(True, url)
-        except RequestException:
-            ghe_message = self.DOOF_REQ_EXCEPT
+        url = 'repos/{}/{}/hooks'.format(owner, repo)
+        ghe_results, err = self.get_all(True, url)
 
         if ghe_results:
             ghe_message = '<b>GHE Triggers for repo:</b><br />{}<br />'.format(
                 self.make_hook_table(ghe_results)
             )
+        else:
+            ghe_message = err
 
-        if not self.ghc_session:
-            ghc_message = ("You forget to give me the Github.com Key. "
-                           "I trusted you and you just cast me aside like "
-                           "a... like... like an old newspaper. He didn't "
-                           "even wrap fish in me. Now THAT'S what I call "
-                           "getting the boot!")
-
-        url = '{}repos/{}/{}/hooks'.format(self.GHC_API_URL, owner, repo)
-        try:
-            ghc_results = self.get_all(True, url)
-        except RequestException:
-            ghc_message = self.DOOF_REQ_EXCEPT
+        ghc_results, err = self.get_all(True, url)
 
         if ghc_results:
             ghc_message = (
@@ -88,10 +73,8 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                     self.make_hook_table(ghc_results)
                 )
             )
-        if not ghe_message:
-            ghe_message = "No hooks or repo doesn't exist at GHE"
-        if not ghc_message:
-            ghc_message = "No hooks or repo doesn't exist at github.com"
+        else:
+            ghc_message = err
 
         self.reply(
             message,
