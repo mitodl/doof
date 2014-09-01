@@ -141,7 +141,7 @@ class CoursePlugin(WillPlugin, GithubBaseMixIn):
         html_team_list = ['<ul>', ]
         if team_list:
             for team in team_list:
-                html_team_list.append(team['name'])
+                html_team_list.append('<li>{}</li>'.format(team['name']))
                 if team['name'].lower() in self.DEPLOYMENT_TEAMS:
                     has_deploy_team = True
         html_team_list.append('</ul>')
@@ -154,7 +154,8 @@ class CoursePlugin(WillPlugin, GithubBaseMixIn):
 
         self.reply(
             message,
-            '<b>{0}-inator checklist:</b><br />{0}<br />{1}'.format(
+            ('<b>{0}-inator checklist:</b><br />{1}<br />'
+             '<b>Teams:</b><br />{2}').format(
                 repo,
                 ''.join(table),
                 ''.join(html_team_list)
