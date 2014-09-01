@@ -57,7 +57,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         html_repo_list.append('</ul>')
         return html_repo_list
 
-    @respond_to('github repos for (?P<user>[\w\-_]+)')
+    @respond_to('github repos for (?P<user>[\d\w\-_]+)')
     def list_user_repos(self, message, user):
         """
         github: github repos for ___.
@@ -115,7 +115,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
             html=True
         )
 
-    @respond_to("^find repos for course (?P<course_name>[\d\.\w]+).+")
+    @respond_to("^find repos for course (?P<course_name>[\-\d\.\w]+).+")
     def find_repos_for_course(self, message, course_name):
         """github: find repos for course ___"""
 

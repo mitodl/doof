@@ -45,7 +45,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
         hook_table.append('</tbody></table>')
         return ''.join(hook_table)
 
-    @respond_to('github hooks for (?P<owner>[\w\-_]+)/(?P<repo>[\w\-_]+)')
+    @respond_to('github hooks for (?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+)')
     def hooks_for_repo(self, message, owner, repo):
         """
         github: github hooks for &lt;owner&gt;/&lt;repo&gt;
