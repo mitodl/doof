@@ -88,7 +88,7 @@ PLUGIN_BLACKLIST = [
 # --------------------------------------------
 
 # The list of rooms will should join.  Default is all rooms.
-ROOMS = ['DevOps', ]
+ROOMS = ['DevOps', 'ODL engineering', ]
 
 
 # The room will will talk to if the trigger is a webhook and he isn't
