@@ -11,7 +11,7 @@ from plugins.git.base import GithubBaseMixIn
 
 class CoursePlugin(WillPlugin, GithubBaseMixIn):
 
-    DEPLOYMENT_TEAMS = ['mitx-content-deployment', ]
+    DEPLOYMENT_TEAMS = ['mitx-content-deployment', 'mitx-studio-export', ]
     STAGING_HOST = 'gr-rp'
     PROD_HOST = 'prod-gr-rp'
     INATOR_HOST = 'gr-inator'
