@@ -109,6 +109,7 @@ DEFAULT_ROOM = 'DevOps'
 # Defaults to everyone.
 ADMINS = [
     "cg",
+    "bdero",
 ]
 
 
