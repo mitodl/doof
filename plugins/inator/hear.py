@@ -11,7 +11,7 @@ class InatorHear(WillPlugin):
 
     @hear('oo+h')
     def ohmy(self, message):
-        self.say('ooooooohhh')
+        self.say('ooooooohhh', message=message)
 
     @hear('hmm+')
     def hmm(self, message):
@@ -23,4 +23,4 @@ class InatorHear(WillPlugin):
             ('Hmm, I was just wondering too. About how awesome the '
              'gnomepocalypse was'),
             ]
-        self.say(random.choice(response_list))
+        self.say(random.choice(response_list), message=message)
