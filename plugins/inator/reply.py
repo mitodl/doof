@@ -12,7 +12,7 @@ class RepliesPlugin(WillPlugin):
         jid = None
         for jid, info in self.internal_roster.items():
             if (info['nick'] == nick_or_name or
-                    nick_or_name in info['name'] or
+                    nick_or_name.lower() in info['name'].lower() or
                     info['nick'] == nick_or_name.lstrip('@')):
                 jid = jid
                 break
