@@ -45,7 +45,8 @@ class RepliesPlugin(WillPlugin):
         garden_gnomes: tally
         """
         gnomes = self.load("garden_gnomes", {})
-        sorted_gnomes = sorted(gnomes.iteritems(), key=operator.itemgetter(1))
+        sorted_gnomes = sorted(gnomes.iteritems(), key=operator.itemgetter(1),
+                               reverse=True)
         response = ['Garden gnomepocalypse leader board: <br /><ol>']
         for users in sorted_gnomes:
             response.append('<li>{1} - {0}</li>'.format(*users))
