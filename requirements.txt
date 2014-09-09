@@ -1,2 +1,2 @@
-will
+git+https://github.com/carsongee/will@cg/feature/redis_pooling#egg=will
 requests
