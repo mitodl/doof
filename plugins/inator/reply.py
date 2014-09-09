@@ -9,14 +9,14 @@ from will.decorators import respond_to, hear
 class RepliesPlugin(WillPlugin):
 
     def get_jid(self, nick_or_name):
-        jid = None
+        result = None
         for jid, info in self.internal_roster.items():
             if (info['nick'] == nick_or_name or
                     nick_or_name.lower() in info['name'].lower() or
                     info['nick'] == nick_or_name.lstrip('@')):
-                jid = jid
+                result = jid
                 break
-        return jid
+        return result
 
     def plus_one_gnome(self, nick):
         user_id = self.get_jid(nick)
@@ -52,7 +52,11 @@ class RepliesPlugin(WillPlugin):
         # Look up user in roster
         user_id = self.get_jid(user_name)
         if not user_id:
-            self.reply('Unable to find {0}'.format(user_name))
+            self.reply(
+                message,
+                "Sorry, I don't know who {0} is.".format(user_name)
+            )
+            return
 
         user_gnomes = int(gnomes.get(user_id, 0))
         if not user_gnomes:
