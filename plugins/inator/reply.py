@@ -42,12 +42,44 @@ class RepliesPlugin(WillPlugin):
             "Behold my new evil scheme, the {word}-Inator".format(word=word)
         )
 
-    @respond_to("award (?P<num_gnomes>\d)+ garden gnomes? to "
+    @respond_to("award (?P<num_gnomes>[^\s]+) (garden )?gnomes? to "
                 "(?P<user_name>.*)")
     def garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """
         garden_gnomes: award special recognition
         """
+        # Input sanitation and syntax hints
+        if num_gnomes in {'a', 'one'}:
+            num_gnomes = 1
+        try:
+            num_gnomes = float(num_gnomes)
+        except ValueError:
+            self.reply(
+                message,
+                "What? How many garden gnomes?"
+            )
+            return
+        if num_gnomes%1:
+            self.reply(
+                message,
+                "Do you really expect me to go cutting up garden gnomes!?"
+            )
+            return
+        num_gnomes = int(num_gnomes)
+        if num_gnomes < 0:
+            self.reply(
+                message,
+                "No, I won't take away garden gnomes. These people have "
+                "earned them through hard work and dedication."
+            )
+            return
+        elif num_gnomes == 0:
+            self.reply(
+                message,
+                "Not even one garden gnome? What a shame."
+            )
+            return
+
         gnomes = self.load("garden_gnomes", {})
         # Look up user in roster
         user_id = self.get_jid(user_name)
