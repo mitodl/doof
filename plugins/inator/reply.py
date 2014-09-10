@@ -76,7 +76,7 @@ class RepliesPlugin(WillPlugin):
         elif num_gnomes == 0:
             self.reply(
                 message,
-                "Not even one garden gnome? What a shame."
+                "Not even one gnome? What a shame."
             )
             return
 
@@ -92,20 +92,91 @@ class RepliesPlugin(WillPlugin):
 
         user_gnomes = int(gnomes.get(user_id, 0))
         if not user_gnomes:
-            gnomes[user_id] = int(num_gnomes)
+            gnomes[user_id] = num_gnomes
         else:
-            gnomes[user_id] = int(num_gnomes) + user_gnomes
+            gnomes[user_id] = num_gnomes + user_gnomes
         self.save("garden_gnomes", gnomes)
 
-        if num_gnomes == 1:
-            self.say("Awarded a gnome to {0}.".format(
-                user_name
-            ), message=message)
-        else:
-            self.say("Awarded {0} gnomes to {1}.".format(
-                num_gnomes,
-                user_name
-            ), message=message)
+        self.say("Awarded {0} gnome{1} to {2}.".format(
+            'a' if num_gnomes == 1 else num_gnomes,
+            '' if num_gnomes == 1 else 's',
+            user_name
+        ), message=message)
+
+    @respond_to("(give( up| away)?|hand( over)?|surrender|deliver|transfer|"
+                "grant) (?P<num_gnomes>[^\s]+) of my ([\w]+ )?(garden )?gnomes "
+                "to (?P<user_name>.*)")
+    def give_garden_gnomes(self, message, num_gnomes=1, user_name=None):
+        """
+        garden_gnomes: give away
+        """
+        # Input sanitation and syntax hints
+        if num_gnomes == "one":
+            num_gnomes = 1
+        try:
+            num_gnomes = float(num_gnomes)
+        except ValueError:
+            self.reply(
+                message,
+                "What? How many garden gnomes?"
+            )
+            return
+        if num_gnomes%1:
+            self.reply(
+                message,
+                "Look, I'm not going to go around cutting up garden gnomes."
+            )
+            return
+        num_gnomes = int(num_gnomes)
+        if num_gnomes < 0:
+            self.reply(
+                message,
+                "What do you want me to do? Take garden gnomes away from {0}?"
+                .format(user_name)
+            )
+            return
+        elif num_gnomes == 0:
+            self.reply(
+                message,
+                "You won't even give away one? That's too bad."
+            )
+            return
+
+        gnomes = self.load("garden_gnomes", {})
+
+        sending_user_id = message.sender.jid
+        # Look up in roster
+        receiving_user_id = self.get_jid(user_name)
+        if not receiving_user_id:
+            self.reply(
+                message,
+                "Sorry, I don't know who {0} is.".format(user_name)
+            )
+            return
+
+        sending_user_gnomes = int(gnomes.get(sending_user_id, 0))
+        if sending_user_gnomes < num_gnomes:
+            self.reply(
+                message,
+                "But you only have {0} garden gnome{1}.. :/".format(
+                    sending_user_gnomes,
+                    '' if sending_user_gnomes == 1 else 's'
+                )
+            )
+            return
+        receiving_user_gnomes = int(gnomes.get(receiving_user_id, 0))
+
+        gnomes[sending_user_id] = sending_user_gnomes - num_gnomes
+        gnomes[receiving_user_id] = receiving_user_gnomes + num_gnomes
+        self.save("garden_gnomes", gnomes)
+
+        self.say("How thoughtful! Transferred {0} gnome{1} from @{2} to {3}."
+                 .format(
+                     'a' if num_gnomes == 1 else num_gnomes,
+                     '' if num_gnomes == 1 else 's',
+                     message.sender.nick,
+                     user_name
+                 ), message=message)
 
     @respond_to("(garden )?gnomes? tally")
     def garden_gnome_tally(self, message):
