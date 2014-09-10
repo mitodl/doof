@@ -42,8 +42,8 @@ class RepliesPlugin(WillPlugin):
             "Behold my new evil scheme, the {word}-Inator".format(word=word)
         )
 
-    @respond_to("award (?P<num_gnomes>[^\s]+) (garden )?gnomes? to "
-                "(?P<user_name>.*)")
+    @respond_to("(award|issue|grant) (?P<num_gnomes>[^\s]+) (garden )?gnomes? "
+                "to (?P<user_name>.*)")
     def garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """
         garden_gnomes: award special recognition
@@ -107,7 +107,7 @@ class RepliesPlugin(WillPlugin):
                 user_name
             ), message=message)
 
-    @respond_to("garden gnome tally")
+    @respond_to("(garden )?gnomes? tally")
     def garden_gnome_tally(self, message):
         """
         garden_gnomes: tally
