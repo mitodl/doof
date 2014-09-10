@@ -97,10 +97,15 @@ class RepliesPlugin(WillPlugin):
             gnomes[user_id] = int(num_gnomes) + user_gnomes
         self.save("garden_gnomes", gnomes)
 
-        self.say("Awarded {0} gnomes to {1}.".format(
-            num_gnomes,
-            user_name
-        ), message=message)
+        if num_gnomes == 1:
+            self.say("Awarded a gnome to {0}.".format(
+                user_name
+            ), message=message)
+        else:
+            self.say("Awarded {0} gnomes to {1}.".format(
+                num_gnomes,
+                user_name
+            ), message=message)
 
     @respond_to("garden gnome tally")
     def garden_gnome_tally(self, message):
