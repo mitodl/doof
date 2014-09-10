@@ -97,10 +97,11 @@ class RepliesPlugin(WillPlugin):
             gnomes[user_id] = num_gnomes + user_gnomes
         self.save("garden_gnomes", gnomes)
 
-        self.say("Awarded {0} gnome{1} to {2}.".format(
+        receiving_user_nick = self.get_user_by_jid(user_id).nick
+        self.say("Awarded {0} gnome{1} to @{2}.".format(
             'a' if num_gnomes == 1 else num_gnomes,
             '' if num_gnomes == 1 else 's',
-            user_name
+            receiving_user_nick
         ), message=message)
 
     @respond_to("(give( up| away)?|hand( over)?|surrender|deliver|transfer|"
@@ -170,12 +171,13 @@ class RepliesPlugin(WillPlugin):
         gnomes[receiving_user_id] = receiving_user_gnomes + num_gnomes
         self.save("garden_gnomes", gnomes)
 
-        self.say("How thoughtful! Transferred {0} gnome{1} from @{2} to {3}."
+        receiving_user_nick = self.get_user_by_jid(receiving_user_id).nick
+        self.say("How thoughtful! Transferred {0} gnome{1} from @{2} to @{3}."
                  .format(
                      'a' if num_gnomes == 1 else num_gnomes,
                      '' if num_gnomes == 1 else 's',
                      message.sender.nick,
-                     user_name
+                     receiving_user_nick
                  ), message=message)
 
     @respond_to("(garden )?gnomes? tally")
