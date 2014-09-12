@@ -165,13 +165,25 @@ class RepliesPlugin(WillPlugin):
                 )
             )
             return
+
+        receiving_user_nick = self.get_user_by_jid(receiving_user_id).nick
+        if sending_user_id == receiving_user_id:
+            self.say(
+                "I mean.. if you really want me to announce it, I guess. @{0} "
+                "just handed themself {1} garden gnome{2}.".format(
+                    receiving_user_nick,
+                    'a' if num_gnomes == 1 else num_gnomes,
+                    '' if num_gnomes == 1 else 's'
+                ), message=message
+            )
+            return
+
         receiving_user_gnomes = int(gnomes.get(receiving_user_id, 0))
 
         gnomes[sending_user_id] = sending_user_gnomes - num_gnomes
         gnomes[receiving_user_id] = receiving_user_gnomes + num_gnomes
         self.save("garden_gnomes", gnomes)
 
-        receiving_user_nick = self.get_user_by_jid(receiving_user_id).nick
         self.say("How thoughtful! Transferred {0} gnome{1} from @{2} to @{3}."
                  .format(
                      'a' if num_gnomes == 1 else num_gnomes,
