@@ -1,7 +1,5 @@
 #!/bin/bash
 
-REDIS_MAX_CONNECTIONS=1
-export REDIS_MAX_CONNECTIONS
 # Simple "integration" test to see if the bot runs
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
