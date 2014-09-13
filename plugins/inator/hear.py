@@ -8,9 +8,15 @@ class InatorHear(WillPlugin):
     """
     Random Doofenshmirtz hear responses
     """
+
     @hear('daily meet.*')
     def dailyupdates(self,message):
-        self.say( 'Number: <a href='tel:+8662427949p4919652245'>866-242-7949</a> Conference Code: 4919652245 Time: 9.30AM', message=message)
+        self.say('Number: <a href="tel:+8662427949p4919652245">'
+                 '866-242-7949</a> Conference Code: 4919652245 '
+                 'Time: 9.30AM', 
+                 html=True,
+                 color='purple',
+                 message=message)
 
     @hear('oo+h')
     def ohmy(self, message):
