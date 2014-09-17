@@ -113,7 +113,7 @@ ADMINS = [
 ]
 
 
-HANGOUT_URL = 'https://plus.google.com/hangouts/_/gvqmkjzvlbgcevyvma7cmasnyma'
+HANGOUT_URL = 'https://plus.google.com/hangouts/_/event/cqaov6mhfsi3h8hrm82b3tabgck'
 
 # Mailgun config, if you'd like will to send emails.
 # DEFAULT_FROM_EMAIL="will@example.com"
