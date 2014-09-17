@@ -88,8 +88,8 @@ PLUGIN_BLACKLIST = [
 # --------------------------------------------
 
 # The list of rooms will should join.  Default is all rooms.
-ROOMS = ['DevOps', 'ODL engineering', ]
-REDIS_MAX_CONNECTIONS = 4
+ROOMS = ['DevOps', 'ODL engineering', '3091r-exam', ]
+REDIS_MAX_CONNECTIONS = 2
 
 # The room will will talk to if the trigger is a webhook and he isn't
 # told a specific room.  Default is the first of ROOMS.f
