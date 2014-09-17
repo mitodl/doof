@@ -65,7 +65,7 @@ PLUGINS = [
 # Don't load any of the plugins in this list.  Same options as above.
 PLUGIN_BLACKLIST = [
     # "will.plugins.friendly.cookies",      # But who would deprive will of cookies??
-    "will.plugins.productivity.hangout",    # Because it requires a HANGOUT_URL
+    #"will.plugins.productivity.hangout",    # Because it requires a HANGOUT_URL
     "will.plugins.productivity.world_time", # Because it requires a WORLD_WEATHER_ONLINE key
 ]
 
@@ -112,6 +112,8 @@ ADMINS = [
     "bdero",
 ]
 
+
+HANGOUT_URL = 'https://plus.google.com/hangouts/_/gvqmkjzvlbgcevyvma7cmasnyma'
 
 # Mailgun config, if you'd like will to send emails.
 # DEFAULT_FROM_EMAIL="will@example.com"
