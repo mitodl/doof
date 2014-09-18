@@ -63,7 +63,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
         else:
             ghe_message = err
 
-        ghc_results, err = self.get_all(True, url)
+        ghc_results, err = self.get_all(False, url)
 
         if ghc_results:
             ghc_message = (
@@ -92,12 +92,13 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
         """
         url = 'repos/{}/{}/hooks'.format(owner, repo)
         ghe_results, err = self.get_all(True, url)
-        ghc_results, err = self.get_all(True, url)
+        ghc_results, err = self.get_all(False, url)
         if ghc_results and ghe_results:
-            self.reply("Ambiguous repo, and I don't know how to handle that")
+            self.reply(message,
+                       "Ambiguous repo, and I don't know how to handle that")
             return
         if not ghc_results and not ghe_results:
-            self.reply("I wasn't able to find any player to engage "
+            self.reply(message, "I wasn't able to find any player to engage "
                        "in thermonuclear war with (shrug).")
             return
         hooks = ghc_results or ghe_results
@@ -111,7 +112,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                         target = hook
                         break
                     else:
-                        self.reply('Too many targets for ze missles')
+                        self.reply(message, 'Too many targets for ze missles')
                         return
         if ghc_results:
             target_session = self.ghc_session
@@ -130,7 +131,13 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
             if response.status_code == 204:
                 good_missles += 1
         if good_missles == fire_number:
-            self.reply('All {0} missles were fired successfully at the target '
+            self.reply(message,
+                       'All {0} missles were fired successfully at the target '
                        '(boom) (dance) (chucknorris)'.format(fire_number))
         else:
-            self.reply('We had {0} duds (fwp) (facepalm) (taft) (omg)')
+            self.reply(
+                message,
+                'We had {0} duds (fwp) (facepalm) (taft) (omg)'.format(
+                    fire_number-good_missles
+                )
+            )
