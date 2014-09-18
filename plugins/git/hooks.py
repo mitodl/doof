@@ -81,3 +81,56 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
             notify=False,
             color='green'
         )
+
+    @respond_to('github global thermonuclear war '
+                '(?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+) '
+                '(?P<hook_host>[\d\w\-_\.]+) (?P<fire_number>\d+)',
+                admin_only=True)
+    def test_hook(self, message, owner, repo, hook_host, fire_number):
+        """
+        github: global thermonuclear war (admin only)
+        """
+        url = 'repos/{}/{}/hooks'.format(owner, repo)
+        ghe_results, err = self.get_all(True, url)
+        ghc_results, err = self.get_all(True, url)
+        if ghc_results and ghe_results:
+            self.reply("Ambiguous repo, and I don't know how to handle that")
+            return
+        if not ghc_results and not ghe_results:
+            self.reply("I wasn't able to find any player to engage "
+                       "in thermonuclear war with (shrug).")
+            return
+        hooks = ghc_results or ghe_results
+        target = None
+        for hook in hooks:
+            # Parse url to sanitize username and pass
+            if hook['config'].get('url'):
+                hook_url = urlparse(hook['config']['url'])
+                if hook_host == hook_url.hostname:
+                    if not target:
+                        target = hook
+                        break
+                    else:
+                        self.reply('Too many targets for ze missles')
+                        return
+        if ghc_results:
+            target_session = self.ghc_session
+            target_url = self.GHC_API_URL
+        else:
+            target_session = self.ghe_session
+            target_url = self.GHE_API_URL
+        # Finally have our target, make ready for war
+        good_missles = 0
+        for _ in range(fire_number):
+            response = target_session.post(
+                '{url}repos/{owner}/{repo}/hooks/{hook_id}/tests'.format(
+                    url=target_url, owner=owner, repo=repo, hook_id=hook['id']
+                )
+            )
+            if response.status_code == 204:
+                good_missles += 1
+        if good_missles == fire_number:
+            self.reply('All {0} missles were fired successfully at the target '
+                       '(boom) (dance) (chucknorris)'.format(fire_number))
+        else:
+            self.reply('We had {0} duds (fwp) (facepalm) (taft) (omg)')
