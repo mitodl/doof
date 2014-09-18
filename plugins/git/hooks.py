@@ -82,7 +82,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
             color='green'
         )
 
-    @respond_to('tri-state area global thermonuclear war '
+    @respond_to('github tri-state area thermonuclear war '
                 '(?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+) '
                 '(?P<hook_host>[\d\w\-_\.]+) (?P<fire_number>\d+)',
                 admin_only=True)
