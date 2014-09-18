@@ -76,23 +76,25 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
 
         self.reply(
             message,
-            '{0}{1}'.format(ghe_message, ghc_message),
+            '{0}<br />{1}'.format(ghe_message, ghc_message),
             html=True,
             notify=False,
             color='green'
         )
 
-    @respond_to('github global thermonuclear war '
+    @respond_to('tri-state area global thermonuclear war '
                 '(?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+) '
                 '(?P<hook_host>[\d\w\-_\.]+) (?P<fire_number>\d+)',
                 admin_only=True)
     def test_hook(self, message, owner, repo, hook_host, fire_number):
         """
-        github: global thermonuclear war (admin only)
+        github: tri-state area thermonuclear war (admin only)
         """
         url = 'repos/{}/{}/hooks'.format(owner, repo)
         ghe_results, err = self.get_all(True, url)
         ghc_results, err = self.get_all(False, url)
+        fire_number = int(fire_number)
+
         if ghc_results and ghe_results:
             self.reply(message,
                        "Ambiguous repo, and I don't know how to handle that")
