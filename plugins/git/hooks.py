@@ -112,10 +112,13 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                 if hook_host == hook_url.hostname:
                     if not target:
                         target = hook
-                        break
                     else:
                         self.reply(message, 'Too many targets for ze missles')
                         return
+        if not target:
+            self.reply(message, "I Found ze state (repo), but couldn't "
+                       "find ze city (hook hostname) to attack")
+            return
         if ghc_results:
             target_session = self.ghc_session
             target_url = self.GHC_API_URL
@@ -127,7 +130,10 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
         for _ in range(fire_number):
             response = target_session.post(
                 '{url}repos/{owner}/{repo}/hooks/{hook_id}/tests'.format(
-                    url=target_url, owner=owner, repo=repo, hook_id=hook['id']
+                    url=target_url,
+                    owner=owner,
+                    repo=repo,
+                    hook_id=target['id']
                 )
             )
             if response.status_code == 204:
