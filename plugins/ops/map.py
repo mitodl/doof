@@ -1,5 +1,5 @@
 from will.plugin import WillPlugin
-from will.decorators import reply
+from will.decorators import respond_to
 
 
 class OpsMap(WillPlugin):
@@ -7,7 +7,7 @@ class OpsMap(WillPlugin):
     Random Doofenshmirtz hear responses
     """
 
-    @reply('map')
+    @respond_to('map')
     def map(self, message):
         """map: map of MITx"""
         self.reply(
