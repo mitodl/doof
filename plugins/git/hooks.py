@@ -1,6 +1,8 @@
 """
 Commands for github hooks.
 """
+import json
+import os
 from urlparse import urlparse
 
 from will.plugin import WillPlugin
@@ -44,6 +46,27 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                               '</tr>'.format(**hook))
         hook_table.append('</tbody></table>')
         return ''.join(hook_table)
+
+    def create_idonethis_hook(self, session, url, token):
+        """
+        Actually do the post for creating the idonethis
+        trigger.
+        """
+        return session.post(
+            url,
+            headers={'Content-type': 'application/json'},
+            data=json.dumps({
+                'name': 'web',
+                'active': True,
+                'config': {
+                    'url': ('https://idonethis.com/gh/odl-engineering'
+                            '/?token={}'.format(
+                                token
+                            )),
+                    'content-type': 'json'
+                }
+            })
+        )
 
     @respond_to('github hooks for (?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+)')
     def hooks_for_repo(self, message, owner, repo):
@@ -149,3 +172,60 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                     fire_number-good_missles
                 )
             )
+
+    @respond_to('github add idonethis to '
+                '(?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+)')
+    def add_idonethis(self, message, owner, repo):
+        """
+        github: add idonethis to <owner>/<repo>
+        """
+
+        # Check that variable exists
+        idonethis_token = os.environ.get('WILL_IDONETHIS_TOKEN', None)
+        if not idonethis_token:
+            self.reply(
+                message,
+                ('Somebody forgot to set the idonethis token, and now'
+                 'I am forced to use my debeardinator on you. '
+                 'http://img4.wikia.nocookie.net/__cb20100414024934/'
+                 'phineasandferb/images/6/61/Bread-inator.jpg')
+            )
+            return
+
+        reply_message = []
+        if self.repo_exists(True, owner, repo):
+            # We found a GHE repo, go ahead and add the hook
+            url = '{0}repos/{1}/{2}/hooks'.format(
+                self.GHE_API_URL, owner, repo
+            )
+            status = self.create_idonethis_hook(
+                self.ghe_session, url, idonethis_token
+            )
+            if status.status_code != 201:
+                reply_message.append(
+                    "Couldn't add that hook to GHE for some reason, "
+                    'here is what my githubinator says went wrong: {}'.format(
+                        status.json
+                    )
+                )
+            else:
+                reply_message.append('I awesomely just added that hook to GHE')
+
+        if self.repo_exists(False, owner, repo):
+            # We found a GHE repo, go ahead and add the hook
+            url = '{0}repos/{1}/{2}/hooks'.format(
+                self.GHC_API_URL, owner, repo
+            )
+            status = self.create_idonethis_hook(
+                self.ghc_session, url, idonethis_token
+            )
+            if status.status_code != 201:
+                reply_message.append(
+                    "Couldn't add that hook to GHC for some reason, "
+                    'here is what my githubinator says went wrong: {}'.format(
+                        status.json
+                    )
+                )
+            else:
+                reply_message.append('I awesomely just added that hook to GHC')
+        self.reply(message, '  \n'.join(reply_message))

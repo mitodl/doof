@@ -58,6 +58,25 @@ class GithubBaseMixIn(object):
             }
         return self._ghc_session
 
+    def repo_exists(self, use_ghe, owner, repo):
+        """
+        Returns true if the passed in repo exists
+        """
+        if use_ghe:
+            session = self.ghe_session
+            api_url = self.GHE_API_URL
+        else:
+            session = self.ghc_session
+            api_url = self.GHC_API_URL
+
+        repo = session.get('{0}repos/{1}/{2}'.format(
+            api_url, owner, repo
+        ))
+        if repo.status_code == 404:
+            return False
+        else:
+            return True
+
     def get_all(self, use_ghe, url):
         """
         Iterate through all results returned by github since it
