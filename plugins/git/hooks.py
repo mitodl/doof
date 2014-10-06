@@ -205,7 +205,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                 reply_message.append(
                     "Couldn't add that hook to GHE for some reason, "
                     'here is what my githubinator says went wrong: {}'.format(
-                        status.json
+                        status.json()
                     )
                 )
             else:
@@ -223,7 +223,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                 reply_message.append(
                     "Couldn't add that hook to GHC for some reason, "
                     'here is what my githubinator says went wrong: {}'.format(
-                        status.json
+                        status.json()
                     )
                 )
             else:
