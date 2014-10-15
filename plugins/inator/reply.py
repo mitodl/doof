@@ -1,4 +1,5 @@
 import operator
+import re
 import requests
 from requests.exceptions import RequestException
 
@@ -51,6 +52,12 @@ class RepliesPlugin(WillPlugin):
         # Input sanitation and syntax hints
         if num_gnomes in {'a', 'one'}:
             num_gnomes = 1
+        if re.match('[0-9]+i', num_gnomes):
+            self.reply(
+                message,
+                "EXCUSE ME?! These gnomes aren't IMAGINARY, "
+                "they're very REAL."
+            )
         try:
             num_gnomes = float(num_gnomes)
         except ValueError:
@@ -59,7 +66,7 @@ class RepliesPlugin(WillPlugin):
                 "What? How many garden gnomes?"
             )
             return
-        if num_gnomes%1:
+        if num_gnomes % 1:
             self.reply(
                 message,
                 "Do you really expect me to go cutting up garden gnomes!?"
@@ -105,7 +112,7 @@ class RepliesPlugin(WillPlugin):
         ), message=message)
 
     @respond_to("(give( up| away)?|hand( over)?|surrender|deliver|transfer|"
-                "grant) (?P<num_gnomes>[^\s]+) of my ([\w]+ )?(garden )?gnomes "
+                "grant) (?P<num_gnomes>[^\s]+i?) of my ([\w]+ )?(garden )?gnomes "
                 "to (?P<user_name>.*)")
     def give_garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """
@@ -114,6 +121,12 @@ class RepliesPlugin(WillPlugin):
         # Input sanitation and syntax hints
         if num_gnomes == "one":
             num_gnomes = 1
+        if re.match('[0-9]+i', num_gnomes):
+            self.reply(
+                message,
+                "EXCUSE ME?! These gnomes aren't IMAGINARY, "
+                "they're completely REAL."
+            )
         try:
             num_gnomes = float(num_gnomes)
         except ValueError:
@@ -122,7 +135,7 @@ class RepliesPlugin(WillPlugin):
                 "What? How many garden gnomes?"
             )
             return
-        if num_gnomes%1:
+        if num_gnomes % 1:
             self.reply(
                 message,
                 "Look, I'm not going to go around cutting up garden gnomes."
