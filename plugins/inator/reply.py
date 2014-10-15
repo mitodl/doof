@@ -52,19 +52,21 @@ class RepliesPlugin(WillPlugin):
         # Input sanitation and syntax hints
         if num_gnomes in {'a', 'one'}:
             num_gnomes = 1
-        if re.match('[0-9]+i', num_gnomes):
-            self.reply(
-                message,
-                "EXCUSE ME?! These gnomes aren't IMAGINARY, "
-                "they're very REAL."
-            )
         try:
             num_gnomes = float(num_gnomes)
         except ValueError:
-            self.reply(
-                message,
-                "What? How many garden gnomes?"
-            )
+            if re.match('[0-9]+i', num_gnomes):
+                self.reply(
+                    message,
+                    "EXCUSE ME?! These gnomes aren't IMAGINARY, "
+                    "they're very REAL."
+                )
+
+            else:
+                self.reply(
+                    message,
+                    "What? How many garden gnomes?"
+                )
             return
         if num_gnomes % 1:
             self.reply(
