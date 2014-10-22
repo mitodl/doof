@@ -242,5 +242,8 @@ class RepliesPlugin(WillPlugin):
 
     @respond_to("oh hi")
     def oh_hi(self, message):
-        self.say(message, 'Oh hi, Perry the Platypus. '
-                 'Would you like some Limburger cheese.')
+        self.say(
+            'Oh hi, Perry the Platypus. Would you like some '
+            'Limburger cheese.',
+            message=message
+        )
