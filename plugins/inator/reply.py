@@ -114,8 +114,8 @@ class RepliesPlugin(WillPlugin):
         ), message=message)
 
     @respond_to("(give( up| away)?|hand( over)?|surrender|deliver|transfer|"
-                "grant) (?P<num_gnomes>[^\s]+i?) of my ([\w]+ )?(garden )?gnomes "
-                "to (?P<user_name>.*)")
+                "grant) (?P<num_gnomes>[^\s]+i?) of my ([\w]+ )?"
+                "(garden )?gnomes to (?P<user_name>.*)")
     def give_garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """
         garden_gnomes: give away
@@ -239,3 +239,8 @@ class RepliesPlugin(WillPlugin):
     @hear("please")
     def please_gnome(self, message):
         self.plus_one_gnome(message.sender['nick'])
+
+    @respond_to("oh hi")
+    def oh_hi(self, message):
+        self.say(message, 'Oh hi, Perry the Platypus. '
+                 'Would you like some Limburger cheese.')
