@@ -173,7 +173,7 @@ class GitHubHooksPlugin(WillPlugin, GithubBaseMixIn):
                 )
             )
 
-    @respond_to('github add idonethis to '
+    @respond_to('(github )?add (github )?idonethis( to| for)? '
                 '(?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+)')
     def add_idonethis(self, message, owner, repo):
         """

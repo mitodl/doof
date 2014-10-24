@@ -10,7 +10,8 @@ class Xkcd(WillPlugin):
     XKCD things
     """
 
-    @respond_to("xkcd (?P<comic_id>[^\s]+)")
+    @respond_to("(get |show( me?) |find )?xkcd( comic)?( number| #)? "
+                "(?P<comic_id>[^\s]+)")
     def fetch_from_id(self, message, comic_id):
         """
         Fetch an XKCD comic from its ID
