@@ -43,6 +43,16 @@ class RepliesPlugin(WillPlugin):
             "Behold my new evil scheme, the {word}-Inator".format(word=word)
         )
 
+    @respond_to("^any blockers today?")
+    def yesterday(self, message):
+        """blockers: any blockers today?"""
+
+        #TODO: A variety of random doofy messages
+        self.reply(
+            message,
+            "I can't find enough tinfoil to cover up the city."
+        )
+
     @respond_to("(award|issue|grant) (?P<num_gnomes>[^\s]+) (garden )?gnomes? "
                 "to (?P<user_name>.*)")
     def garden_gnomes(self, message, num_gnomes=1, user_name=None):
