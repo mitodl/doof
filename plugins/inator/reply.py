@@ -43,8 +43,8 @@ class RepliesPlugin(WillPlugin):
             "Behold my new evil scheme, the {word}-Inator".format(word=word)
         )
 
-    @respond_to("^any blockers today?")
-    def yesterday(self, message):
+    @respond_to("^any blockers today\?")
+    def any_blockers(self, message):
         """blockers: any blockers today?"""
 
         #TODO: A variety of random doofy messages
