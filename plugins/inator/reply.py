@@ -1,6 +1,7 @@
 import operator
 import re
 import requests
+from random import randrange
 from requests.exceptions import RequestException
 
 from will.plugin import WillPlugin
@@ -46,11 +47,16 @@ class RepliesPlugin(WillPlugin):
     @respond_to("^any blockers today\?")
     def any_blockers(self, message):
         """blockers: any blockers today?"""
+        blockers = [
+            "I can't seem find enough tinfoil to cover up the city.",
+            "No blockers today, I'm just planning my latest scheme."
+        ]
 
-        #TODO: A variety of random doofy messages
         self.reply(
             message,
-            "I can't find enough tinfoil to cover up the city."
+            blockers[
+                randrange(len(blockers))
+            ]
         )
 
     @respond_to("(award|issue|grant) (?P<num_gnomes>[^\s]+) (garden )?gnomes? "
