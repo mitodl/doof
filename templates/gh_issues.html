@@ -1,0 +1,21 @@
+<b>Github Enterprise</b>
+{% if ghe_results %}
+  {% for issue in ghe_results %}
+    <a href="{{ issue.html_url }}">#{{ issue.number }}</a>:
+    {{ issue.user.login }} - {{ issue.title }}
+    <br />
+  {% endfor %}
+{% else %}
+  <i>No results - {{ ghe_error_message }}</i>
+{% endif %}
+
+<b>Github Com</b>
+{% if ghc_results %}
+  {% for issue in ghc_results %}
+	<a href="{{ issue.html_url }}">#{{ issue.number }}</a>:
+	  {{ issue.user.login }} - {{ issue.title }}
+	<br />
+  {% endfor %}
+{% else %}
+  <i>No results - {{ ghc_error_message }}</i>
+{% endif %}
