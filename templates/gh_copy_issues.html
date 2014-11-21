@@ -1,0 +1,9 @@
+<b>Failed to copy all issues</b>
+<ul>
+  {% for issue in failed_issues %}
+    <li>
+      <a href="{{ issue.html_url }}">#{{ issue.number }}</a>:
+       {{ issue.user.login }} - {{ issue.title }}
+    </li>
+  {% endfor %}
+</ul>
