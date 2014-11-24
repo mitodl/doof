@@ -51,7 +51,7 @@ class CoursePlugin(WillPlugin, GithubBaseMixIn):
             status = '&#x2718;'
         return '<tr><td>{0}</td><td>{1}</td></tr>'.format(status, item)
 
-    @respond_to('github course check for '
+    @respond_to('(github)? course check for '
                 '(?P<owner>[\w\-_\d]+)/(?P<repo>[\d\w\-_]+)')
     def course_check(self, message, owner, repo):
         """
