@@ -123,7 +123,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
         default_message = "No repos found for course on {0}."
 
         ghe_message = default_message.format("GHE")
-        ghc_message = "".join("<br />\n", default_message.format("GHC"))
+        ghc_message = "".join(["<br />\n", default_message.format("GHC")])
 
         # First massage string into repo format
         course_name = course_name.replace('.', '')
