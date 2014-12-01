@@ -120,8 +120,10 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
     def find_repos_for_course(self, message, course_name):
         """github: find repos for course ___"""
 
-        ghe_message = None
-        ghc_message = None
+        default_message = "No repos found for course on {0}."
+
+        ghe_message = default_message.format("GHE")
+        ghc_message = "".join("<br />\n", default_message.format("GHC"))
 
         # First massage string into repo format
         course_name = course_name.replace('.', '')
@@ -141,19 +143,27 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
 
         num_repos = 0
         if len(ghe_results.get('items', 0)) > 0:
-            num_repos += len(ghe_results['items'])
+            ghe_length = len(ghe_results['items'])
+            num_repos += ghe_length
             html_repo_list = self.format_repo_list(ghe_results['items'])
+
             ghe_message = (
-                'Found {0} repos at  for course on GHE:\n<br />{1}'.format(
-                    len(ghe_results['items']), '\n'.join(html_repo_list)
+                'Found {0} repo{1} for course on GHE:\n<br />{2}'.format(
+                    ghe_length,
+                    "" if ghe_length == 1 else "s",
+                    '\n'.join(html_repo_list)
                 )
             )
         if len(ghc_results.get('items', 0)) > 0:
-            num_repos += len(ghc_results['items'])
+            ghc_length = len(ghc_results['items'])
+            num_repos += ghc_length
             html_repo_list = self.format_repo_list(ghc_results['items'])
+
             ghc_message = (
-                'Found {0} repos at  for course on GHC:\n<br />{1}'.format(
-                    len(ghc_results['items']), '\n'.join(html_repo_list)
+                'Found {0} repo{1} for course on GHC:\n<br />{2}'.format(
+                    ghc_length,
+                    "" if ghc_length == 1 else "s",
+                    '\n'.join(html_repo_list)
                 )
             )
         scare_message = ''
