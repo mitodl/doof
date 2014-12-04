@@ -49,7 +49,8 @@ class RepliesPlugin(WillPlugin):
         """blockers: any blockers today?"""
         blockers = [
             "I can't seem find enough tinfoil to cover up the city.",
-            "No blockers today, I'm just planning my latest scheme."
+            "No blockers today, I'm just planning my latest scheme.",
+            "Yes, santa stole my giant magnet."
         ]
 
         self.reply(
