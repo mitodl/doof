@@ -50,7 +50,9 @@ class RepliesPlugin(WillPlugin):
         blockers = [
             "I can't seem find enough tinfoil to cover up the city.",
             "No blockers today, I'm just planning my latest scheme.",
-            "Yes, santa stole my giant magnet."
+            "Yes, santa stole my giant magnet.",
+            "Yes, I'm not sure where the \"Self Destruct\" button should go on"
+            "my latest inator.. perhaps on the bottom?",
         ]
 
         self.reply(
