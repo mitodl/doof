@@ -115,7 +115,7 @@ class GitHubReposPlugin(WillPlugin, GithubBaseMixIn):
             html=True
         )
 
-    @respond_to("^(github)? find (repos? for )?course "
+    @respond_to("^(github)? find (repos? for )?courses? "
                 "(?P<course_name>[\-\d\.\w]+).+")
     def find_repos_for_course(self, message, course_name):
         """github: find repos for course ___"""
