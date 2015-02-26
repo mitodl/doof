@@ -1,5 +1,6 @@
 import random
 
+import requests
 from will.plugin import WillPlugin
 from will.decorators import hear
 
@@ -33,3 +34,17 @@ class InatorHear(WillPlugin):
              'gnomepocalypse was'),
             ]
         self.say(random.choice(response_list), message=message)
+
+    # This is stolen from edX's alton bot: https://github.com/edx/alton/pull/22
+    @hear("alot")
+    def alot(self, message):
+        """show off a picture of an alot when someone is talking about one """
+        data = {"q": "alot", "v": "1.0", "safe": "active", "rsz": "8"}
+        response = requests.get(
+            "http://ajax.googleapis.com/ajax/services/search/images",
+            params=data
+        )
+        results = response.json()["responseData"]["results"]
+        if len(results) > 0:
+            url = random.choice(results)["unescapedUrl"]
+            self.say("%s" % url, message=message)
