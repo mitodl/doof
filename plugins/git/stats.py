@@ -24,7 +24,7 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
         """
         self.reply(
             message,
-            'Hold on, Perry the Judgeapuss, this is a LOT of API calls'
+            'Hold on, Perry the Judgapus, this is a LOT of API calls'
         )
         url = 'orgs/{0}/repos'
         repos = []
