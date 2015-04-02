@@ -46,14 +46,16 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
         repos_by_commits.reverse()
         self.reply(
             message,
-            '{url} is the busiest of them all!'.format(
-                url=repos_by_commits[0][1]
+            '{1} is the busiest of them all (with {0} commits)!'.format(
+                *repos_by_commits[0]
             )
         )
-        next_four = [x[1] for x in repos_by_commits[1:4]]
+        next_set = [
+            '{1} ({0} commits)'.format(*x) for x in repos_by_commits[1:10]
+        ]
         self.reply(
             message,
             'Followed shortly by:\n{runners_up}'.format(
-                runners_up='\n'.join(next_four)
+                runners_up='\n'.join(next_set)
             )
         )
