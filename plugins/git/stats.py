@@ -21,6 +21,7 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
     def most_popular_repo(self, message):
         """
         github: magic @doof on the cloud, who is the busiest repo of them all
+        Most busy repos in mitodl/mitocw in last 4 weeks
         """
         self.reply(
             message,
@@ -40,7 +41,7 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
                 )
             )
             if stats and stats.get('all'):
-                all_commits = sum(stats['all'])
+                all_commits = sum(stats['all'][:4])
                 repos_by_commits.append((all_commits, repo['html_url']))
         repos_by_commits.sort(key=lambda tuple: tuple[0])
         repos_by_commits.reverse()
