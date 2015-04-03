@@ -21,7 +21,7 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
     def most_popular_repo(self, message):
         """
         github: magic @doof on the cloud, who is the busiest repo of them all
-        Most busy repos in mitodl/mitocw in last 4 weeks
+        Most busy repos in mitodl/mitocw/starteam in last 4 weeks
         """
         self.reply(
             message,
@@ -29,7 +29,7 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
         )
         url = 'orgs/{0}/repos'
         repos = []
-        for org in ['mitodl', 'mitocw']:
+        for org in ['mitodl', 'mitocw', 'starteam']:
             repo_results, _ = self.get_all(False, url.format(org))
             repos.extend(repo_results)
         repos_by_commits = []
