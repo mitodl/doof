@@ -41,7 +41,7 @@ class GitHubStatsPlugin(WillPlugin, GithubBaseMixIn):
                 )
             )
             if stats and stats.get('all'):
-                all_commits = sum(stats['all'][:4])
+                all_commits = sum(stats['all'][-4:])
                 repos_by_commits.append((all_commits, repo['html_url']))
         repos_by_commits.sort(key=lambda tuple: tuple[0])
         repos_by_commits.reverse()
