@@ -48,3 +48,8 @@ class InatorHear(WillPlugin):
         if len(results) > 0:
             url = random.choice(results)["unescapedUrl"]
             self.say("%s" % url, message=message)
+
+    @hear('surely')
+    def surely(self, message):
+        self.say("Don't call me Shirley", message=message)
+
