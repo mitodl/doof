@@ -116,6 +116,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         # it is on git hub enterprise, false is on github.com
         orgs = (
             ('mitodl', False),
+            ('starteam', False),
             ('mitocw', False),
             ('mitx-devops', True)
         )
