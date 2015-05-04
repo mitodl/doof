@@ -106,3 +106,47 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 'was successful, but now the key holder needs to unwatch '
                 'all {0} issues'.format(len(src_results)),
             )
+
+    @respond_to('github prs for review')
+    def prs_need_review(self, message):
+        """github: github prs for review"""
+        # Search all PRs for odl and ocw on github.com and mitx-devops
+        # on ghe.
+        # orgs are a tuple of the name, and a boolean that is true if
+        # it is on git hub enterprise, false is on github.com
+        orgs = (
+            ('mitodl', False),
+            ('mitocw', False),
+            ('mitx-devops', True)
+        )
+        # We should probably standardize on one
+        review_labels = ('review-needed', 'Needs Review')
+        prs = []
+        for org in orgs:
+            for label in review_labels:
+                data, _ = self.get_all(
+                    org[1],
+                    'search/issues?q=is:open '
+                    'label:"{label}" type:pr user:{org}'.format(
+                        label=label, org=org[0]
+                    )
+                )
+                if data and data.get('items'):
+                    prs.extend(data['items'])
+        if len(prs) == 0:
+            self.reply(
+                message,
+                (
+                    "Stupid github-inator didn't return anything, either "
+                    "you guys are way too nice, or my inator broke down "
+                    "and I need to find a new switch or something to fix it."
+                )
+            )
+            return
+
+        self.reply(
+            message,
+            rendered_template('need_review.html', {'pull_requests': prs}),
+            html=True,
+            notify=True
+        )

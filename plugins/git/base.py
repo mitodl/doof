@@ -114,9 +114,18 @@ class GithubBaseMixIn(object):
             response = session.get('{0}{1}'.format(api_url, url))
             if response.status_code == 200:
                 results = response.json()
+                is_search_results = False
+                if (
+                    isinstance(results, dict) and
+                    len(results.get('items', [])) > 0
+                ):
+                    is_search_results = True
                 while response.links.get('next', False):
                     response = session.get(response.links['next']['url'])
-                    results += response.json()
+                    if is_search_results:
+                        results['items'] += response.json()['items']
+                    else:
+                        results += response.json()
         except RequestException:
             return (None, self.DOOF_REQ_EXCEPT)
 

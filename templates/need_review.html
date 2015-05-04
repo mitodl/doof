@@ -1,0 +1,14 @@
+<b>If you are trying to be nice and want to work on these, stop it.
+  You should be more evil!
+</b>
+<ul>
+  {% for pull_request in pull_requests %}
+    <li>
+      <a href="{{ pull_request.html_url }}">{{ pull_request.title }}</a>
+       by 
+      <a href="{{ pull_request.user.html_url }}">
+        {{ pull_request.user.login }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
