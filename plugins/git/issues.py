@@ -5,7 +5,7 @@ import json
 import logging
 
 from will.plugin import WillPlugin
-from will.decorators import respond_to, rendered_template
+from will.decorators import respond_to, rendered_template, periodic
 
 from plugins.git.base import GithubBaseMixIn
 
@@ -17,6 +17,30 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
     """
     Bot related needs for issues
     """
+
+    def issues_to_review(self):
+        """Return a list of issues that need reviewing"""
+        orgs = (
+            ('mitodl', False),
+            ('starteam', False),
+            ('mitocw', False),
+            ('mitx-devops', True)
+        )
+        # We should probably standardize on one
+        review_labels = ('review-needed', 'Needs Review')
+        prs = []
+        for org in orgs:
+            for label in review_labels:
+                data, _ = self.get_all(
+                    org[1],
+                    'search/issues?q=is:open '
+                    'label:"{label}" type:pr user:{org}'.format(
+                        label=label, org=org[0]
+                    )
+                )
+                if data and data.get('items'):
+                    prs.extend(data['items'])
+        return prs
 
     @respond_to('github issues for (?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+)')
     def issues_for_repo(self, message, owner, repo):
@@ -114,26 +138,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         # on ghe.
         # orgs are a tuple of the name, and a boolean that is true if
         # it is on git hub enterprise, false is on github.com
-        orgs = (
-            ('mitodl', False),
-            ('starteam', False),
-            ('mitocw', False),
-            ('mitx-devops', True)
-        )
-        # We should probably standardize on one
-        review_labels = ('review-needed', 'Needs Review')
-        prs = []
-        for org in orgs:
-            for label in review_labels:
-                data, _ = self.get_all(
-                    org[1],
-                    'search/issues?q=is:open '
-                    'label:"{label}" type:pr user:{org}'.format(
-                        label=label, org=org[0]
-                    )
-                )
-                if data and data.get('items'):
-                    prs.extend(data['items'])
+        prs = self.issues_to_review()
         if len(prs) == 0:
             self.reply(
                 message,
@@ -151,3 +156,40 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
             html=True,
             notify=True
         )
+
+    @periodic(minute=10)
+    def review_issue_wrangling(self):
+        """
+        Check for new PRs that need reviews and ones that have been reviewed
+        """
+        storage_key = 'review-prs'
+        current_prs = {x['html_url']: x for x in self.issues_to_review()}
+        current_pr_set = set(current_prs)
+
+        old_prs = self.load(storage_key, [])
+        old_pr_set = set(old_prs)
+        for pr_url in old_pr_set - current_pr_set:
+            self.say(
+                'Congratulations {username} <a href="{url}">{title}</a> has '
+                'been reviewed'.format(
+                    username=old_prs[pr_url]['user']['login'],
+                    url=old_prs[pr_url]['html_url'],
+                    title=old_prs[pr_url]['title']
+                ),
+                html=True,
+                notify=True,
+                room='ODL engineering'
+            )
+        for pr_url in current_pr_set - old_pr_set:
+            self.say(
+                'Alert! Alert! New PR hot off the presses.<br>'
+                '<a href="{url}">{title}</a> by {username}'.format(
+                    url=current_prs[pr_url]['html_url'],
+                    title=current_prs[pr_url]['title'],
+                    username=current_prs[pr_url]['user']['login']
+                ),
+                html=True,
+                notify=True,
+                room='ODL engineering'
+            )
+        self.save(storage_key, current_prs)
