@@ -163,7 +163,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         Check for new PRs that need reviews and ones that have been reviewed
         """
         storage_key = 'review-prs'
-        room = 'ODL entineering'
+        room = 'ODL engineering'
         current_prs = {x['html_url']: x for x in self.issues_to_review()}
         current_pr_set = set(current_prs)
 
