@@ -163,6 +163,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         Check for new PRs that need reviews and ones that have been reviewed
         """
         storage_key = 'review-prs'
+        room = 'ODL entineering'
         current_prs = {x['html_url']: x for x in self.issues_to_review()}
         current_pr_set = set(current_prs)
 
@@ -178,7 +179,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 ),
                 html=True,
                 notify=True,
-                room='ODL engineering'
+                room=self.get_froom_from_name_or_id(room)
             )
         for pr_url in current_pr_set - old_pr_set:
             self.say(
@@ -190,6 +191,6 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 ),
                 html=True,
                 notify=True,
-                room='ODL engineering'
+                room=self.get_froom_from_name_or_id(room)
             )
         self.save(storage_key, current_prs)
