@@ -157,7 +157,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
             notify=True
         )
 
-    @periodic(minute=10)
+    @periodic(minute='*/10')
     def review_issue_wrangling(self):
         """
         Check for new PRs that need reviews and ones that have been reviewed
