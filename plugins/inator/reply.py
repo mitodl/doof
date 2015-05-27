@@ -1,3 +1,7 @@
+"""
+Reply to direct questions.
+"""
+
 import operator
 import re
 import requests
@@ -9,6 +13,9 @@ from will.decorators import respond_to, hear
 
 
 class RepliesPlugin(WillPlugin):
+    """
+    Classy replies.
+    """
 
     def get_jid(self, nick_or_name):
         result = None
@@ -31,7 +38,7 @@ class RepliesPlugin(WillPlugin):
             gnomes[user_id] = 1 + user_gnomes
         self.save('garden_gnomes', gnomes)
 
-    @respond_to("^any new schemes\?")
+    @respond_to(r"^any new schemes\?")
     def schemeinator(self, message):
         """scheme: any new schemes?"""
         try:
@@ -44,7 +51,7 @@ class RepliesPlugin(WillPlugin):
             "Behold my new evil scheme, the {word}-Inator".format(word=word)
         )
 
-    @respond_to("^any blockers today\?")
+    @respond_to(r"^any blockers today\?")
     def any_blockers(self, message):
         """blockers: any blockers today?"""
         blockers = [
@@ -62,7 +69,7 @@ class RepliesPlugin(WillPlugin):
             ]
         )
 
-    @respond_to("(award|issue|grant) (?P<num_gnomes>[^\s]+) (garden )?gnomes? "
+    @respond_to(r"(award|issue|grant) (?P<num_gnomes>[^\s]+) (garden )?gnomes?"
                 "to (?P<user_name>.*)")
     def garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """
@@ -133,7 +140,7 @@ class RepliesPlugin(WillPlugin):
         ), message=message)
 
     @respond_to("(give( up| away)?|hand( over)?|surrender|deliver|transfer|"
-                "grant) (?P<num_gnomes>[^\s]+i?) of my ([\w]+ )?"
+                r"grant) (?P<num_gnomes>[^\s]+i?) of my ([\w]+ )?"
                 "(garden )?gnomes to (?P<user_name>.*)")
     def give_garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """

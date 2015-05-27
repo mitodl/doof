@@ -34,11 +34,11 @@ class InatorHear(WillPlugin):
         """let's bring the conversation back around to me"""
         response_list = [
             'Hmm indeed, let us contemplate my childhood in Drusselstein',
-            ('Hmmm, do you think my theme song is too short?  '
-             'I was thinking of adding "Home of the Inatoranator"'),
+            'Hmmm, do you think my theme song is too short?  '
+            'I was thinking of adding "Home of the Inatoranator"',
             'Hmm, I was just thinking how much I hate my lousy brother',
-            ('Hmm, I was just wondering too. About how awesome the '
-             'gnomepocalypse was'),
+            'Hmm, I was just wondering too. About how awesome the '
+            'gnomepocalypse was',
             "That's a deep thought. Please tell us more.",
             ]
         self.say(random.choice(response_list), message=message)
