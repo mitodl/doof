@@ -285,6 +285,19 @@ class RepliesPlugin(WillPlugin):
         delta = datetime.now() - self.start_timestamp
         self.say(parse_uptime(delta.seconds), message=message)
 
+    @respond_to("uptime_verbose")
+    def uptime_verbose(self, message):
+        date_format = "%Y-%m-%d %H:%M:%S"
+        now = datetime.now()
+        delta = now - self.start_timestamp
+        msg = "Started {0}, currently {1}. {2} seconds. Parsed: {3}".format(
+            self.start_timestamp.strftime(date_format),
+            now.strftime(date_format),
+            delta.seconds,
+            parse_uptime(delta.seconds),
+        )
+        self.say(msg, message=message)
+
 def parse_uptime(seconds):
     """Receive seconds as integer, return a human-friendly string."""
     day = 86400
