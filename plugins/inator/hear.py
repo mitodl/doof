@@ -62,3 +62,12 @@ class InatorHear(WillPlugin):
         """70s jokes are back!"""
         self.say("Don't call me Shirley", message=message)
 
+    @hear(r' to me\.?$')
+    def to_me(self, message):
+        """get a song stuck in your head"""
+        if should_i(10):
+            self.say("To me, to meee, TO MEEEE!", message=message)
+
+def should_i(percent):
+    """Do something sometimes."""
+    return random.choice(range(100)) < percent
