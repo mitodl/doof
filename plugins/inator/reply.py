@@ -301,7 +301,7 @@ class RepliesPlugin(WillPlugin):
 def parse_uptime(seconds):
     """Receive seconds as integer, return a human-friendly string."""
     day = 86400
-    hour = 360
+    hour = 3600
     minute = 60
     parts = []
 
