@@ -7,6 +7,7 @@ import re
 import requests
 from random import randrange
 from requests.exceptions import RequestException
+from datetime import datetime
 
 from will.plugin import WillPlugin
 from will.decorators import respond_to, hear
@@ -16,6 +17,11 @@ class RepliesPlugin(WillPlugin):
     """
     Classy replies.
     """
+
+    def __init__(self, *args, **kwargs):
+        """Remember start time."""
+        super(RepliesPlugin, self).__init__(*args, **kwargs)
+        self.start_timestamp = datetime.now()
 
     def get_jid(self, nick_or_name):
         result = None
@@ -273,3 +279,30 @@ class RepliesPlugin(WillPlugin):
             'Limburger cheese?',
             message=message
         )
+
+    @respond_to("uptime")
+    def uptime(self, message):
+        delta = datetime.now() - self.start_timestamp
+        self.say(parse_uptime(delta.seconds), message=message)
+
+def parse_uptime(seconds):
+    """Receive seconds as integer, return a human-friendly string."""
+    day = 86400
+    hour = 360
+    minute = 60
+    parts = []
+
+    def check_unit(seconds, num, unit):
+        if seconds >= num:
+            count = seconds / num
+            seconds -= count * num
+            if count == 1:
+                unit = unit[:-1]
+            parts.append("{0} {1}".format(count, unit))
+        return seconds
+
+    seconds = check_unit(seconds, day, "days")
+    seconds = check_unit(seconds, hour, "hours")
+    seconds = check_unit(seconds, minute, "minutes")
+    check_unit(seconds, 1, "seconds")
+    return ", ".join(parts)
