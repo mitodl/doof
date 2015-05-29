@@ -62,7 +62,7 @@ class InatorHear(WillPlugin):
         """70s jokes are back!"""
         self.say("Don't call me Shirley", message=message)
 
-    @hear(r'( to me\.?|lgtm)$')
+    @hear(r'(\bto me|lgtm)(\.|!)?$')
     def to_me(self, message):
         """get a song stuck in your head"""
         if should_i(10):
