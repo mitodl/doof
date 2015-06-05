@@ -3,6 +3,7 @@ Commands for working with github issues
 """
 import json
 import logging
+import datetime
 
 from will.plugin import WillPlugin
 from will.decorators import respond_to, rendered_template, periodic
@@ -17,30 +18,89 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
     """
     Bot related needs for issues
     """
+    STATUS_OTHER = 0
+    STATUS_NEEDS_REVIEW = 1
+    STATUS_WORK_IN_PROGRESS = 2
+    STATUS_QUESTION = 3
+    STATUS_WAITING_ON_AUTHOR = 4
+
+    STATUS_MERGED = 5
+    STATUS_CLOSED = 6
 
     def issues_to_review(self):
         """Return a list of issues that need reviewing"""
+
+        return [pr for pr in self.issues_open() if pr['status'] == self.STATUS_NEEDS_REVIEW]
+
+    def issues_recently_merged(self):
         orgs = (
             ('mitodl', False),
             ('starteam', False),
             ('mitocw', False),
             ('mitx-devops', True)
         )
-        # We should probably standardize on one
-        review_labels = ('review-needed', 'Needs Review')
         prs = []
         for org in orgs:
-            for label in review_labels:
-                data, _ = self.get_all(
-                    org[1],
-                    'search/issues?q=is:open '
-                    'label:"{label}" type:pr user:{org}'.format(
-                        label=label, org=org[0]
-                    )
+            data, _ = self.get_all(
+                org[1],
+                'search/issues?q=user:{org} merged:>={today} type:pr'.format(
+                    org=org[0],
+                    today=datetime.datetime.now().date().isoformat()
                 )
-                if data and data.get('items'):
-                    prs.extend(data['items'])
-        return prs
+            )
+            if data and data.get('items'):
+                prs.extend(data['items'])
+
+        def status_for_pr(pr):
+            return self.STATUS_MERGED
+
+        def with_status(pr):
+            pr['status'] = status_for_pr(pr)
+            return pr
+
+        return [with_status(pr) for pr in prs]
+        
+    def issues_open(self):
+        """Return a list of open issues"""
+        orgs = (
+            ('mitodl', False),
+            ('starteam', False),
+            ('mitocw', False),
+            ('mitx-devops', True)
+        )
+        prs = []
+        for org in orgs:
+            data, _ = self.get_all(
+                org[1],
+                'search/issues?q=user:{org} is:open type:pr'.format(
+                    org=org[0],
+                    today=datetime.datetime.now().date().isoformat()
+                )
+            )
+            if data and data.get('items'):
+                prs.extend(data['items'])
+
+        def status_for_pr(pr):
+            # We should probably standardize on one
+            review_labels = ('review-needed', 'Needs Review')
+        
+            for label_info in pr['labels']:
+                for review_label in review_labels:
+                    if label_info['name'] == review_label:
+                        return self.STATUS_NEEDS_REVIEW
+                if label_info['name'] == "work in progress":
+                    return self.STATUS_WORK_IN_PROGRESS
+                if label_info['name'] == "question":
+                    return self.STATUS_QUESTION
+                if label_info['name'] == "Waiting on Author":
+                    return self.STATUS_WAITING_ON_AUTHOR
+            return self.STATUS_OTHER
+
+        def with_status(pr):
+            pr['status'] = status_for_pr(pr)
+            return pr
+
+        return [with_status(pr) for pr in prs]
 
     @respond_to('github issues for (?P<owner>[\d\w\-_]+)/(?P<repo>[\d\w\-_]+)')
     def issues_for_repo(self, message, owner, repo):
@@ -162,14 +222,25 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         """
         Check for new PRs that need reviews and ones that have been reviewed
         """
-        storage_key = 'review-prs'
+        storage_key = 'old-prs'
         room = 'ODL engineering'
-        current_prs = {x['html_url']: x for x in self.issues_to_review()}
-        current_pr_set = set(current_prs)
-
+        current_prs = {x['html_url']: x for x in (self.issues_open() + self.issues_recently_merged())}
         old_prs = self.load(storage_key, [])
-        old_pr_set = set(old_prs)
-        for pr_url in old_pr_set - current_pr_set:
+
+        def transition(from_statuses, to_statuses):
+            from_set = {x['html_url'] for x in old_prs if x['status'] in from_statuses}
+            to_set = {x['html_url'] for x in current_prs if x['status'] in to_statuses}
+            return to_set - from_set
+
+        all_statuses = {self.STATUS_OTHER,
+                        self.STATUS_NEEDS_REVIEW,
+                        self.STATUS_WORK_IN_PROGRESS,
+                        self.STATUS_QUESTION,
+                        self.STATUS_WAITING_ON_AUTHOR,
+                        self.STATUS_MERGED,
+                        self.STATUS_CLOSED}
+        
+        for pr_url in transition({self.STATUS_NEEDS_REVIEW}, {self.STATUS_MERGED}):
             self.say(
                 'Congratulations {username} <a href="{url}">{title}</a> has '
                 'been reviewed'.format(
@@ -181,7 +252,9 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 notify=True,
                 room=self.get_room_from_name_or_id(room)
             )
-        for pr_url in current_pr_set - old_pr_set:
+
+        for pr_url in transition(all_statuses - {self.STATUS_NEEDS_REVIEW},
+                                 self.STATUS_NEEDS_REVIEW):
             self.say(
                 'Alert! Alert! New PR hot off the presses.<br>'
                 '<a href="{url}">{title}</a> by {username}'.format(
@@ -193,4 +266,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 notify=True,
                 room=self.get_room_from_name_or_id(room)
             )
+
+        # TODO: what should happen for other transition states?
+            
         self.save(storage_key, current_prs)
