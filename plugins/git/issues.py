@@ -224,13 +224,14 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         """
         storage_key = 'old-prs'
         room = 'ODL engineering'
+
         current_prs = {x['html_url']: x for x in (self.issues_open() + self.issues_recently_merged())}
         old_prs = self.load(storage_key, [])
 
         def transition(from_statuses, to_statuses):
             from_set = {x['html_url'] for x in old_prs if x['status'] in from_statuses}
-            to_set = {x['html_url'] for x in current_prs if x['status'] in to_statuses}
-            return to_set - from_set
+            to_set = {html_url for html_url, x in current_prs.items() if x['status'] in to_statuses}
+            return to_set.intersection(from_set)
 
         all_statuses = {self.STATUS_OTHER,
                         self.STATUS_NEEDS_REVIEW,
@@ -317,7 +318,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
 
         for pr_url in transition(all_statuses - {self.STATUS_NEEDS_REVIEW,
                                                  self.STATUS_WAITING_ON_AUTHOR},
-                                 self.STATUS_NEEDS_REVIEW):
+                                 {self.STATUS_NEEDS_REVIEW}):
             self.say(
                 'Alert! Alert! New PR hot off the presses.<br>'
                 '<a href="{url}">{title}</a> by {username}'.format(
