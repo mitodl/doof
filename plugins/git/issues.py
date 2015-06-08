@@ -218,7 +218,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         )
 
     @respond_to('github pr changes')
-    def list_review_messages(self):
+    def list_review_messages(self, message):
         """
         Check for new PRs that need reviews and ones that have been reviewed
 
