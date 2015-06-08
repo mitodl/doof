@@ -253,6 +253,18 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 room=self.get_room_from_name_or_id(room)
             )
 
+        for pr_url in transition({self.STATUS_NEEDS_REVIEW}, {self.STATUS_CLOSED}):
+            self.say(
+                'PR for review <a href="{url}">{title}</a> '
+                'was closed without being merged!'.format(
+                    username=old_prs[pr_url]['user']['login'],
+                    url=old_prs[pr_url]['html_url'],
+                    title=old_prs[pr_url]['title']
+                ),
+                html=True,
+                notify=True,
+                room=self.get_room_from_name_or_id(room)
+            )
         for pr_url in transition({self.STATUS_NEEDS_REVIEW}, {self.STATUS_WAITING_ON_AUTHOR}):
             self.say(
                 'Note to {username}: PR <a href="{url}">{title}</a> was reviewed and is waiting '
@@ -292,6 +304,17 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 room=self.get_room_from_name_or_id(room)
             )
             
+        for pr_url in transition({self.STATUS_QUESTION}, all_statuses - {self.STATUS_QUESTION}):
+            self.say(
+                'Question for PR <a href="{url}">{title}</a> was answered!'.format(
+                    url=old_prs[pr_url]['html_url'],
+                    title=old_prs[pr_url]['title']
+                    ),
+                html=True,
+                notify=True,
+                room=self.get_room_from_name_or_id(room)
+            )            
+
         for pr_url in transition(all_statuses - {self.STATUS_NEEDS_REVIEW,
                                                  self.STATUS_WAITING_ON_AUTHOR},
                                  self.STATUS_NEEDS_REVIEW):
