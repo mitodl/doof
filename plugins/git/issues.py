@@ -217,11 +217,23 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
             notify=True
         )
 
+    @respond_to('github pr changes')
+    def list_review_messages(self):
+        """
+        Check for new PRs that need reviews and ones that have been reviewed
+
+        Don't call this frequently!
+        """
+        return self._wrangle_issues(False)
+
     @periodic(minute='*/10')
     def review_issue_wrangling(self):
         """
         Check for new PRs that need reviews and ones that have been reviewed
         """
+        return self._wrangle_issues(True)
+        
+    def _wrangle_issues(self, save_state):
         storage_key = 'old-prs'
         room = 'ODL engineering'
 
@@ -321,7 +333,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 html=True,
                 notify=True,
                 room=self.get_room_from_name_or_id(room)
-            )            
+            )
 
         for pr_url in transition_new(all_statuses - {self.STATUS_NEEDS_REVIEW,
                                                      self.STATUS_WAITING_ON_AUTHOR},
@@ -339,5 +351,6 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
             )
 
         # TODO: what should happen for other transition states?
-            
-        self.save(storage_key, current_prs)
+
+        if save_state:
+            self.save(storage_key, current_prs)
