@@ -250,7 +250,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
             # or from nothing to to_statuses
             from_set = {x['html_url'] for x in old_prs}
             to_set = {html_url for html_url, x in current_prs.items() if x['status'] in to_statuses}
-            return transition(from_statuses, to_statuses) + (to_set - from_set)
+            return transition(from_statuses, to_statuses).union(to_set - from_set)
 
         all_statuses = {self.STATUS_OTHER,
                         self.STATUS_NEEDS_REVIEW,
