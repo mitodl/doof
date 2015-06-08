@@ -238,17 +238,17 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         room = 'ODL engineering'
 
         current_prs = {x['html_url']: x for x in (self.issues_open() + self.issues_recently_merged())}
-        old_prs = self.load(storage_key, [])
+        old_prs = self.load(storage_key, {})
 
         def transition(from_statuses, to_statuses):
-            from_set = {x['html_url'] for x in old_prs if x['status'] in from_statuses}
+            from_set = {html_url for html_url, x in old_prs.items() if x['status'] in from_statuses}
             to_set = {html_url for html_url, x in current_prs.items() if x['status'] in to_statuses}
             return to_set.intersection(from_set)
 
         def transition_new(from_statuses, to_statuses):
             # transitions between one of from_statuses to one of to_statuses,
             # or from nothing to to_statuses
-            from_set = {x['html_url'] for x in old_prs}
+            from_set = {html_url for html_url, x in old_prs.items()}
             to_set = {html_url for html_url, x in current_prs.items() if x['status'] in to_statuses}
             return transition(from_statuses, to_statuses).union(to_set - from_set)
 
