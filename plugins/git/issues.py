@@ -233,6 +233,13 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
             to_set = {html_url for html_url, x in current_prs.items() if x['status'] in to_statuses}
             return to_set.intersection(from_set)
 
+        def transition_new(from_statuses, to_statuses):
+            # transitions between one of from_statuses to one of to_statuses,
+            # or from nothing to to_statuses
+            from_set = {x['html_url'] for x in old_prs}
+            to_set = {html_url for html_url, x in current_prs.items() if x['status'] in to_statuses}
+            return transition(from_statuses, to_statuses) + (to_set - from_set)
+
         all_statuses = {self.STATUS_OTHER,
                         self.STATUS_NEEDS_REVIEW,
                         self.STATUS_WORK_IN_PROGRESS,
@@ -316,8 +323,8 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
                 room=self.get_room_from_name_or_id(room)
             )            
 
-        for pr_url in transition(all_statuses - {self.STATUS_NEEDS_REVIEW,
-                                                 self.STATUS_WAITING_ON_AUTHOR},
+        for pr_url in transition_new(all_statuses - {self.STATUS_NEEDS_REVIEW,
+                                                     self.STATUS_WAITING_ON_AUTHOR},
                                  {self.STATUS_NEEDS_REVIEW}):
             self.say(
                 'Alert! Alert! New PR hot off the presses.<br>'
