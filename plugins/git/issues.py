@@ -234,7 +234,7 @@ class GitHubIssuesPlugin(WillPlugin, GithubBaseMixIn):
         return self._wrangle_issues(True)
         
     def _wrangle_issues(self, save_state):
-        storage_key = 'old-prs'
+        storage_key = 'old-pr-storage'
         room = 'ODL engineering'
 
         current_prs = {x['html_url']: x for x in (self.issues_open() + self.issues_recently_merged())}
