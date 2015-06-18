@@ -9,7 +9,7 @@ script: bash scripts/integration_test
 deploy:
   provider: heroku
   api_key:
-    secure: TjyGL0+Dbogf4LnIMNNxLB/jnAo8uhQ7jxne8sDkNvVol7Qmj91OoGemj35oynH0jsvqeKK8yoHA9uh3J5qBs4NoNQIOea34lv4BxmujmfO7pI6ZyqHy7ZPVSRU1SUo4qExcHF+AYE8pxFNpEqISEQn9N6MTQYWYGrJOwqA26ik=
+    secure: "WY8L6il4T8dNhF5F2T/595CG1PYdY0C/LypuqQ2Fr2/8r//MjlcOa6CeuIyVXvAcS0Q9wgW3t3HlL1L9w4eYGxk+Of7GWcMtMhJZqOzuCbP5+KivexXDQYAhx5wLyWozBPDNUv64DCQW3ZxD1ZwTklgVGgbnkrNNORxoiwv0sNI="
   app: doof
 env:
   global:
