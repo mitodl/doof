@@ -76,7 +76,7 @@ class RepliesPlugin(WillPlugin):
         )
 
     @respond_to(r"(award|issue|grant) (?P<num_gnomes>[^\s]+) (garden )?gnomes?"
-                "to (?P<user_name>.*)")
+                " to (?P<user_name>.*)")
     def garden_gnomes(self, message, num_gnomes=1, user_name=None):
         """
         garden_gnomes: award special recognition
