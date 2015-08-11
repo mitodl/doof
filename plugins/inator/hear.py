@@ -68,6 +68,11 @@ class InatorHear(WillPlugin):
         if should_i(10):
             self.say("To me, to meee, TO MEEEE!", message=message)
 
+    @hear('brief demo')
+    def brief(self, message):
+        self.say("I often demo in my briefs", message=message)
+
+
 def should_i(percent):
     """Do something sometimes."""
     return random.choice(range(100)) < percent
