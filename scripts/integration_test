@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source test_credentials
+
 # Simple "integration" test to see if the bot runs
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
