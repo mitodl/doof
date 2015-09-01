@@ -2,20 +2,19 @@ language: python
 python:
 - '2.7'
 services:
-  - redis-server
+- redis-server
 install:
 - pip install -r requirements.txt --use-mirrors
 script: bash scripts/integration_test
 deploy:
   provider: heroku
   api_key:
-    secure: "WY8L6il4T8dNhF5F2T/595CG1PYdY0C/LypuqQ2Fr2/8r//MjlcOa6CeuIyVXvAcS0Q9wgW3t3HlL1L9w4eYGxk+Of7GWcMtMhJZqOzuCbP5+KivexXDQYAhx5wLyWozBPDNUv64DCQW3ZxD1ZwTklgVGgbnkrNNORxoiwv0sNI="
+    secure: WY8L6il4T8dNhF5F2T/595CG1PYdY0C/LypuqQ2Fr2/8r//MjlcOa6CeuIyVXvAcS0Q9wgW3t3HlL1L9w4eYGxk+Of7GWcMtMhJZqOzuCbP5+KivexXDQYAhx5wLyWozBPDNUv64DCQW3ZxD1ZwTklgVGgbnkrNNORxoiwv0sNI=
   app: doof
 env:
   global:
-  - secure: asHecjX0lfvVMfzOpGX0NX72afYrGZMFBjdDC5AOVuFGAQTQOKt/V5wR7/PbkQGcAXyVToqQA/jY5kEKXC1zl2m/2wpq01svLwq6hwhSG7U2NXjkvszZhfHAhrfhKbXfCFDtV+P1aCdX9Nr8//waLP2wTTKQJrnlb5lYhXwgrrA=
-  - secure: EoQeD6BEGV91uVhuwkJZ7A9hV04mWlYKONrKn8tGWzaeOLzZ7WlA1oRhlR0EEtnmtVmHY84k5qXa90VIQ6JhD9KxyXK5G572SH8/VDteKUBJsfcICCSatjs9x/Bs8FB/B1maOQhsOaSi36a+ZTef5P1GHd1btFaXNVZsuWPKM0Y=
-  - secure: jTNsLLbBaSWjejQns/zezY2LeN8sZOW6LC3x4gu/A8xhm3CfD/oVcP3OpqplQMMsVA+9U3Q9/25McDbc8g7BuggFLCoKjRdptkJwgQ+OjCCPijtogN3YQbq34zLp8HNz2Rr8deX04ekdS6p+P2BGx4AVBCmv2Ajwm3ocDaWjxak=
-  - secure: uAV8gg3Bw3EBzGrOJcprgBSu1W++J4BHQvgXM3OKvey5YcCb22mFamCon32jCLNs8vOdL3gcpE2MTXAFeihatkILBiNCagEIASRL1GEqOFW+DS/2xf7qLahhKWrUew31Qim4hHZGIdONJFv+nIT9kewWw9MmQd/R/UwelAe6XEY=
-  - secure: s0PIX86TyyLkuag5QJ9LavaJL6Th80Pt6SBPcDWJGMnFHcA6E3v+pX2YD1kXO/jnQOZO1pcS+nQRiCCYtk8OatB5p0iCxQOXPob0gnSP1Fxob02TTCdwf8/AS5Gr7nFFtowisOeaAcqtoK49K6yb3xt0rNnQYnp0vJ7AjVAdTzU=
-  - secure: Pjz5DI8kxzk4EYhTqwBIr+2zoArEcOna0u9RjIrSEF3P1NKpHFpQt7uy/tiPPUWja/F7nSsf6BPJgO/AuI1ggLfXNQbBEhf3LYHYFIPckeKz5hUe3GiY4/sxNn0cLiTjoqjmBGrt6oWvgVQBxQ/jX79lzzba91OgK4nElHZpZkU=
+  - secure: p9TdN4wNxB4zSJBVGMvUbvbostu/TGfCKO7VS2DhqxeyoEXsfnNPy4uQ1oQgjWQ4e5nlDyVNKuYMA3BO5xx0kRqsyrk4ja+UatgSPsPbcaCXo/CIgTQB6c4aoUnNtZVFWgu/Zz/K3g89bk9AWVhXvNfpvywiBJBfi5P/g/GiQiA=
+  - secure: sJl+MPAXrVOAjzwYbIAEPNgXHqhe76n4JjAbrkUhf4yBYPXmnE6EnFkyAJq1l+Ba/MZlMVJlrvzfx9oRAU4/lHVsITNfoOHDOncr+dKgpky9xPSmHOC5Oq3uJ8k3GMXYiIs9LsGIxa34z6MUZq+w6J3jb/R1x80AFFNJHGitnls=
+  - secure: gpLw28DSmYYyPnTlydJ7BVdBTFXyfLa6dXVw2N382PIjT/6Juq9iDHIeKO3BBkp07zEBlF9aZ/JIDpDBhy+GcxCrrMamG9ukstpurDdcv2HqeE0GQV0oHzz8VLj2FO9/nFNoP3xw4lg2GP2VXPIWktbNPvoeKjKYRrf021OcH2o=
+  - secure: RrmA1krtA0RH3ySiTxh6dujy6tMgx52eQHzG5k4UcN/vpzhuFn5IG1Y/OxA2IjZiro9T07s/OKWb5I9WLb/8hNo4sxKffDmBiWAXcijxuAxYzXtEzNhfmci0j02Vr2yG3s95tAQ8KrIivQrZQnFHWCPz2nYpCbOtezXO1gQyoKk=
+  - secure: fgjhWu/Y4br3XjJ/FP6ho7r7dvIb5OoF1UxZbmTxsMP7nPHWL4dYtRNm2wOYzoGzRv6KQd5EMpcPVyRsADmICo+H+5Xy/iDmHo5iFbWeSQf3ArCjKGCkGVTYjPn2CW2Z2jVgyAjMIuOAEK0GjKcCbTJgS628dZMMd0UuM6o310c=
