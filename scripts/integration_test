@@ -1,6 +1,12 @@
 #!/bin/bash
 
-source test_credentials
+if [ -f "test_credentials" ]
+then
+    echo "Sourcing credentials from 'test_credentials'."
+    source test_credentials
+else
+    echo "Using environment for credentials."
+fi
 
 # Simple "integration" test to see if the bot runs
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
